@@ -2,6 +2,7 @@ const {
   create,
   getEmailAlready,
   getUserByUserEmail,
+  createUserInfo,
 } = require("./user.service");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -21,6 +22,24 @@ module.exports = {
       }
       return res.status(200).json({
         success: 1,
+        id: results.insertId,
+        data: results,
+      });
+    });
+  },
+  createUserInfo: (req, res) => {
+    const body = req.body;
+    createUserInfo(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: 0,
+          message: "Database connection errror",
+        });
+      }
+      return res.status(200).json({
+        success: 1,
+        id: results.insertId,
         data: results,
       });
     });
@@ -52,7 +71,7 @@ module.exports = {
         console.log(err);
       }
       if (!results) {
-        return res.json({
+        return res.status(500).json({
           success: 0,
           data: "Invalid email or password 1",
         });
@@ -62,18 +81,19 @@ module.exports = {
       console.log("Password : ", result);
       if (result) {
         // results.password = undefined;
-        const jsontoken = sign({ result: results }, "qwe1234", {
+        const jsontoken = sign({ result: results }, process.env.JWT_KEY, {
           expiresIn: "1h",
         });
-        return res.json({
+        return res.status(200).json({
           success: 1,
           message: "login successfully",
+          id: results.user_id,
           token: jsontoken,
         });
       } else {
-        return res.json({
+        return res.status(500).json({
           success: 0,
-          data: "Invalid email or password 2",
+          data: "Invalid email or password ",
         });
       }
     });

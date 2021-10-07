@@ -14,6 +14,28 @@ module.exports = {
       }
     );
   },
+
+  createUserInfo: (data, callBack) => {
+    pool.query(
+      `INSERT into tb_user_info (user_id,userinfo_firstname_la,userinfo_lastname_la,userinfo_firstname_en,userinfo_lastname_en,userinfo_tell)
+      VALUES(?,?,?,?,?,?)`,
+      [
+        data.user_id,
+        data.userinfo_firstname_la,
+        data.userinfo_lastname_la,
+        data.userinfo_firstname_en,
+        data.userinfo_lastname_en,
+        data.userinfo_tell,
+      ],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+
   getEmailAlready: (email, callBack) => {
     pool.query(
       "select * from tb_users where email = ?",
