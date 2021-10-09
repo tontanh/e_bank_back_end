@@ -3,6 +3,8 @@ const {
   getEmailAlready,
   getUserByUserEmail,
   createUserInfo,
+  getTellAlready,
+  getConnection,
 } = require("./user.service");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -54,12 +56,55 @@ module.exports = {
       if (!results) {
         return res.status(200).json({
           success: true,
-          message: "Record not Found",
+          message: "Email not Found",
         });
       }
       results.password = undefined;
       return res.status(500).json({
         success: false,
+        data: results,
+      });
+    });
+  },
+  getTellAlready: (req, res) => {
+    const tell = req.params.tell;
+    getTellAlready(tell, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      if (!results) {
+        return res.status(200).json({
+          success: true,
+          message: "Tell not Found",
+        });
+      }
+
+      results.password = undefined;
+      return res.status(500).json({
+        success: false,
+        data: results,
+      });
+    });
+  },
+  getConnection: (req, res) => {
+    const connect = req.params.connect;
+    getConnection(connect, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      if (!results) {
+        return res.status(500).json({
+          success: false,
+          message: "Server off",
+        });
+      }
+
+      results.password = undefined;
+      return res.status(200).json({
+        success: true,
+        Server: results.con_status,
         data: results,
       });
     });
