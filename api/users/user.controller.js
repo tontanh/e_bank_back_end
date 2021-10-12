@@ -123,7 +123,7 @@ module.exports = {
       }
 
       const result = compareSync(body.password, results.password);
-      console.log("Login 1 More && Password : ", result);
+      console.log("Login 1 More && success : ", result);
       if (result) {
         // results.password = undefined;
         const jsontoken = sign({ result: results }, process.env.JWT_KEY, {
