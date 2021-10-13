@@ -73,10 +73,24 @@ module.exports = {
       }
     );
   },
+
   getConnection: (connect, callBack) => {
     pool.query(
       "select * from tb_connection where con_status = ?",
       [connect],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results[0]);
+      }
+    );
+  },
+
+  getUserInfo: (uid, callBack) => {
+    pool.query(
+      "select * from tb_user_info where user_id = ?",
+      [uid],
       (error, results, fields) => {
         if (error) {
           callBack(error);

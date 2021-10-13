@@ -4,7 +4,7 @@ const {
   getUserByUserEmail,
   createUserInfo,
   getTellAlready,
-  getConnection,
+  getConnection,getUserInfo
 } = require("./user.service");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -141,6 +141,23 @@ module.exports = {
           data: "Invalid email or password ",
         });
       }
+    });
+  },
+  getUserInfo: (req, res) => {
+    const uid = req.params.uid;
+    getUserInfo(uid, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      if (!results) {
+        return res.status(500).json({
+          success: true,
+          message: "data not Found",
+        });
+      }
+      results.password = undefined;
+      return res.status(200).json(results);
     });
   },
 };
