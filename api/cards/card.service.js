@@ -27,18 +27,18 @@ module.exports = {
       }
     );
   },
-  // hisTrans: (data, callBack) => {
-  //   pool.query(
-  //     `select * from tb_card where card_number = ?`,
-  //     [data.user_id, data.noti_token],
-  //     (error, results, fields) => {
-  //       if (error) {
-  //         callBack(error);
-  //       }
-  //       return callBack(null, results);
-  //     }
-  //   );
-  // },
+  hisTrans: (data, callBack) => {
+    pool.query(
+      `select * from tb_transfer where trans_reciever = ? or trans_sender = ? ORDER BY trans_time desc`,
+      [data.trans_reciever, data.trans_sender],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
   selectCard: (card, callBack) => {
     pool.query(
       "select * from tb_card where card_number = ?",
@@ -51,7 +51,18 @@ module.exports = {
       }
     );
   },
-
+  selectNoti: (noti, callBack) => {
+    pool.query(
+      "SELECT * FROM `tb_notification` WHERE user_id = ? ORDER by login_time DESC LIMIT 1",
+      [noti],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results[0]);
+      }
+    );
+  },
   createNoti: (data, callBack) => {
     pool.query(
       `INSERT into tb_notification (user_id,noti_token)
