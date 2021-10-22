@@ -10,7 +10,10 @@ const {
 } = require("./user.service");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
-const client = require("twilio")(process.env.ACC_ID, process.env.AUTH_TOKEN);
+const client = require("twilio")(
+  "ACaffea7a8d87418dfa97956f3da332bd4",
+  "2e668bd33f823ac4704760e137eeab42"
+);
 module.exports = {
   createUser: (req, res) => {
     const body = req.body;
@@ -180,7 +183,7 @@ module.exports = {
   sentAuth: (req, res) => {
     if (req.query.phonenumber) {
       client.verify
-        .services(process.env.SERVICE_ID)
+        .services("VAd4d1e7126250fc72f4b8544453d50dcd")
         .verifications.create({
           to: `+${req.query.phonenumber}`,
           channel: req.query.channel === "call" ? "call" : "sms",
@@ -203,7 +206,7 @@ module.exports = {
   receivedAuthPhone: (req, res) => {
     if (req.query.phonenumber && req.query.code.length === 6) {
       client.verify
-        .services(process.env.SERVICE_ID)
+        .services("VAd4d1e7126250fc72f4b8544453d50dcd")
         .verificationChecks.create({
           to: `+${req.query.phonenumber}`,
           code: req.query.code,
