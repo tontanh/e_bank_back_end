@@ -99,4 +99,16 @@ module.exports = {
       }
     );
   },
+  updateUsers: (data, callBack) => {
+    pool.query(
+      `update tb_users set  password=? where user_id = ?`,
+      [data.password, data.user_id],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results[0]);
+      }
+    );
+  },
 };

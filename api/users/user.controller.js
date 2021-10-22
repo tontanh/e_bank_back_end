@@ -4,11 +4,13 @@ const {
   getUserByUserEmail,
   createUserInfo,
   getTellAlready,
-  getConnection,getUserInfo
+  getConnection,
+  getUserInfo,
+  updateUsers,
 } = require("./user.service");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
-
+const client = require("twilio")(process.env.ACC_ID, process.env.AUTH_TOKEN);
 module.exports = {
   createUser: (req, res) => {
     const body = req.body;
@@ -159,5 +161,73 @@ module.exports = {
       results.password = undefined;
       return res.status(200).json(results);
     });
+  },
+  updateUsers: (req, res) => {
+    const body = req.body;
+    const salt = genSaltSync(10);
+    body.password = hashSync(body.password, salt);
+    updateUsers(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.status(200).json({
+        success: 1,
+        message: "update successfully",
+      });
+    });
+  },
+  sentAuth: (req, res) => {
+    if (req.query.phonenumber) {
+      client.verify
+        .services(process.env.SERVICE_ID)
+        .verifications.create({
+          to: `+${req.query.phonenumber}`,
+          channel: req.query.channel === "call" ? "call" : "sms",
+        })
+        .then((data) => {
+          res.status(200).send({
+            message: "Verification is sent!!",
+            phonenumber: req.query.phonenumber,
+            // data
+          });
+        });
+    } else {
+      res.status(400).send({
+        message: "Wrong phone number :(",
+        phonenumber: req.query.phonenumber,
+        // data
+      });
+    }
+  },
+  receivedAuthPhone: (req, res) => {
+    if (req.query.phonenumber && req.query.code.length === 6) {
+      client.verify
+        .services(process.env.SERVICE_ID)
+        .verificationChecks.create({
+          to: `+${req.query.phonenumber}`,
+          code: req.query.code,
+        })
+        .then((data) => {
+          if (data.status === "approved") {
+            res.status(200).send({
+              message: "User is Verified!!",
+              // data
+            });
+          } else {
+            res.status(400).send({
+              message: "Wrong phone number or code :(",
+              phonenumber: req.query.phonenumber,
+              // data
+            });
+          }
+        });
+    } else {
+      res.status(400).send({
+        message: "Wrong phone number or code :(",
+        phonenumber: req.query.phonenumber,
+        // data
+      });
+    }
   },
 };
