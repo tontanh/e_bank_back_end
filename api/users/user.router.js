@@ -7,8 +7,8 @@ const {
   getConnection,
   getUserInfo,
   updateUsers,
-  sentAuth,
-  receivedAuthPhone,
+  // sentAuth,
+  // receivedAuthPhone,
 } = require("./user.controller");
 const router = require("express").Router();
 const { checkToken } = require("../../auth/token_validation");
@@ -21,6 +21,6 @@ router.get("/tell/:tell", getTellAlready);
 router.post("/login", login);
 router.post("/register", createUserInfo);
 router.get("/server/:connect", getConnection);
-router.get("/sent_auth/phone/", sentAuth);
-router.get("/verify_auth/phone/", receivedAuthPhone);
+// router.get("/sent_auth/phone", sentAuth);
+// router.get("/verify_auth/phone", receivedAuthPhone);
 module.exports = router;
